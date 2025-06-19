@@ -16,6 +16,19 @@ const Transaction = () => {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filtrar transacciones basándose en el término de búsqueda
+  const filteredTransactions = transactions.filter((transaction) => {
+    const searchLower = searchTerm.toLowerCase();
+    const description = transaction.description?.toLowerCase() || '';
+    const categoryName = transaction.category?.name?.toLowerCase() || '';
+    const amount = transaction.amount?.toString() || '';
+    
+    return description.includes(searchLower) || 
+           categoryName.includes(searchLower) || 
+           amount.includes(searchLower);
+  });
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -161,7 +174,6 @@ const Transaction = () => {
         <button className="w-fit bg-slate-600 text-white px-3 py-1 rounded m-2 cursor-pointer hover:bg-gray-400 ">
           Agregar
         </button>
-        <p className="w-full text-center text-sm text-gray-600 font-bold">Ingresa una categoria nueva</p>
       </form>
 
       {/* Lista de transacciones existentes */}
@@ -172,11 +184,22 @@ const Transaction = () => {
             type="text"
             placeholder="Buscar..."
             className="border-b border-b-slate-500 text-center w-1/3"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </form>
         {error && <div className="text-red-600 font-bold mb-2">{error}</div>}
         <ul className="mt-3 bg-slate-700 shadow p-2 rounded">
-          {transactions.map((movimineto) => (
+          {filteredTransactions.length === 0 && searchTerm ? (
+            <li className="text-white text-center py-4">
+              No se encontraron transacciones que coincidan con "{searchTerm}"
+            </li>
+          ) : filteredTransactions.length === 0 ? (
+            <li className="text-white text-center py-4">
+              No hay transacciones registradas
+            </li>
+          ) : (
+            filteredTransactions.map((movimineto) => (
             <li key={movimineto._id} className="flex justify-between items-center">
               <TransactionItem transaction={movimineto} />
               <button
@@ -205,7 +228,8 @@ const Transaction = () => {
                 <Trash2 />
               </button>
             </li>
-          ))}
+            ))
+          )}
         </ul>
       </div>
     </section>

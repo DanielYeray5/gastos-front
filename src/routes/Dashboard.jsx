@@ -134,7 +134,7 @@ function Dashboard({ setRuta }) {
           {error && <div className="text-red-600 font-bold mb-2">{error}</div>}
           <ul className=" bg-slate-700 text-white p-2 rounded mt-4 shadow">
             {transactions.map((item, index) => {
-              return <TransactionItem transaction={item} key={index} />;
+              return <li key={index}><TransactionItem transaction={item} /></li>;
             })}
           </ul>
         </section>
